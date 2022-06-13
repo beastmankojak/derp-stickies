@@ -43,7 +43,7 @@ const offsets = {
     app.get('/:derp/:animation', async (req, res) => {
       try {
         const { derp, animation } = req.params;
-        if (!derp || !/^DP\d{5}$/.test(derp) || animation !== 'wave.apng') {
+        if (!derp || !/^DP\d{5}$/.test(derp) || !/^wave.(apng|gif)$/.test(animation)) {
           console.log('Something went wrong', derp, animation);
           res.status(404).end();
         }
@@ -76,11 +76,12 @@ const offsets = {
 
         // run the script
         const waveAssets = path.join(__dirname, '..', 'assets', 'wave');
-        const { stdout, stderr } = await exec(`sh ${WAVE_SH} "${outDir}" "${waveAssets}" ${offset}`);
+        const [, extension] = animation.match(/\.(.*)/);
+        const { stdout, stderr } = await exec(`sh ${WAVE_SH} "${outDir}" "${waveAssets}" ${offset} ${extension}`);
         console.log(stdout);
         console.error(stderr);
 
-        res.setHeader('content-type', 'image/apng');
+        res.setHeader('content-type', extension === 'gif' ? 'image/gif' : 'image/apng');
         fs.createReadStream(`${outDir}/wave.apng`).pipe(res);
       } catch (err) {
         console.log('Error:', err);
