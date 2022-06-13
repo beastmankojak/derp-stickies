@@ -43,7 +43,7 @@ const offsets = {
     app.get('/:derp/:animation', async (req, res) => {
       try {
         const { derp, animation } = req.params;
-        if (!derp || !/^DP\d{5}$/.test(derp) || animation !== 'wave') {
+        if (!derp || !/^DP\d{5}$/.test(derp) || animation !== 'wave.apng') {
           console.log('Something went wrong', derp, animation);
           res.status(404).end();
         }
