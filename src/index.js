@@ -15,6 +15,24 @@ const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27017';
 const OUT_DIR = process.env.OUT_DIR || path.join(__dirname, '..', 'out');
 const WAVE_SH = path.join(__dirname, '..', 'bin', 'wave.sh');
 
+const offsets = {
+  Astro: 42, // DP09278
+  Buff: 56, // DP00775
+  Corpo: 34, // DP08206
+  Cyborg: 46, // DP05128
+  DJ: 40, // DP02086
+  Dave: 34, // DP09005
+  Deity: 29, // DP05980
+  Ghost: 30, // DP03456
+  "Mad Scientist": 40, // DP06259
+  Magic: 36, // DP03876
+  Monk: 36, // DP04354
+  Ninja: 32, //DP05806
+  Redneck: 50, // DP08280
+  Stoner: 27, // DP07079
+  Viking: 34, // DP03672
+};
+
 (async () => {
   const mongoClient = new MongoClient(MONGODB_URL);
   try {
@@ -31,11 +49,13 @@ const WAVE_SH = path.join(__dirname, '..', 'bin', 'wave.sh');
         }
         const derpId = derp.toUpperCase();
 
+        // Pull derp metadata from database
+        const derpMeta = await mongoClient.db('derp').collection('derpMeta').findOne({ derpId });
+
         // If source file does not exist, pull it from blockfrost
         const outDir = path.join(OUT_DIR, derpId);
         const outFile = path.join(outDir, `${derpId}.png`);
         if (!fs.existsSync(outFile)) {
-          const derpMeta = await mongoClient.db('derp').collection('derpMeta').findOne({ derpId });
           const image = (derpMeta?.image || '').replace('ipfs://', '');
           if (!image) {
             console.log('Missing image hash');
@@ -51,9 +71,12 @@ const WAVE_SH = path.join(__dirname, '..', 'bin', 'wave.sh');
           }
         }
 
+        const { body } = derpMeta;
+        const offset = offsets[body];
+
         // run the script
         const waveAssets = path.join(__dirname, '..', 'assets', 'wave');
-        const { stdout, stderr } = await exec(`sh ${WAVE_SH} "${outDir}" "${waveAssets}"`);
+        const { stdout, stderr } = await exec(`sh ${WAVE_SH} "${outDir}" "${waveAssets}" ${offset}`);
         console.log(stdout);
         console.error(stderr);
 
