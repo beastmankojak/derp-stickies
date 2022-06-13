@@ -81,7 +81,7 @@ const offsets = {
         console.error(stderr);
 
         res.setHeader('content-type', 'image/apng');
-        fs.createReadStream(`${outDir}/${derpId}-wave.apng`).pipe(res);
+        fs.createReadStream(`${outDir}/wave.apng`).pipe(res);
       } catch (err) {
         console.log('Error:', err);
         res.status(500).end();
