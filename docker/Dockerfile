@@ -1,7 +1,7 @@
 FROM node:16-alpine
+RUN  apk add --no-cache ffmpeg imagemagick
 WORKDIR /app
 COPY . ./
-RUN  apk add --no-cache ffmpeg imagemagick \
-  && npm install
+RUN npm install
 USER node
 CMD ["npm", "start"]
