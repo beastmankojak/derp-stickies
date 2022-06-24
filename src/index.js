@@ -73,9 +73,10 @@ const offsets = {
 
         const { body } = derpMeta;
         const offset = offsets[body];
+        const color = derpMeta.color === 'Ghost' ? 'White' : derpMeta.color;
 
         // run the script
-        const waveAssets = path.join(__dirname, '..', 'assets', 'wave');
+        const waveAssets = path.join(__dirname, '..', 'assets', 'wave', color );
         const [, extension] = animation.match(/\.(.*)/);
         const { stdout, stderr } = await exec(`sh ${WAVE_SH} "${outDir}" "${waveAssets}" ${offset} ${extension}`);
         console.log(stdout);
